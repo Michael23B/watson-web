@@ -14,7 +14,7 @@ async function CallWatsonPersonality(res) {
     let profileText;
 
     try {
-        profileText = fs.readFileSync('./test-profile.txt', 'utf8');
+        profileText = fs.readFileSync('./data/test-profile.txt', 'utf8');
     }
     catch(e) { console.error(e); }
     
@@ -43,7 +43,11 @@ app.get('/api/result', (req, res) => {
 
 app.get('/api/personality', async (req, res) => {
     console.log('api/personality called');
-    CallWatsonPersonality(res);
+    //CallWatsonPersonality(res);
+    
+    //For testing purposes just use this earlier result
+    let testResult = require('./data/test-personality.json')
+    res.send(testResult);
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
