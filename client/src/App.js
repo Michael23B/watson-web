@@ -5,12 +5,15 @@ import personalityDisplay from './modules/displayPersonality';
 import { Jumbotron, Button, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
 
 class App extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      response: ''
+      response: '',
+      formText: ''
     }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.submitForm = this.submitForm.bind(this);
   }
 
   async callApi() {
@@ -22,7 +25,17 @@ class App extends Component {
     return body;
   }
 
-  componentDidMount() {
+  handleChange(e) {
+    this.setState({
+      response: this.state.response,
+      formText: e.target.value
+    })
+    console.log(this.state);
+  }
+
+  submitForm(e) {
+    e.preventDefault();
+    console.log(e);
     this.callApi()
     .then(res => this.setState({ response: res }))
     .catch(console.error);
@@ -31,50 +44,55 @@ class App extends Component {
   render() {
     return (
       <div>
-      <Jumbotron>
-        <h1 className="display-3">Watson Personality</h1>
-        <p className="lead">This page lets you upload text and have the Watson API infer personality insights from it.</p>
-        <hr className="my-2" />
-        <p>Upload a text file or paste text here.</p>
-        <p className="lead">
-          <Form>
-            <FormGroup>
-              <Label for="insightText">Write or paste some text</Label>
-              <Input type="textarea" name="text" id="insightText" placeholder="Mininum 100 words, recommended 1200." />
-              <Button color="primary">Submit</Button>
-            </FormGroup>
-            <FormGroup>
-              <Label for="insightUpload">Upload a file</Label>
-              <Input type="file" name="file" id="insightUpload" />
-              <FormText color="muted">
-                Must be a .txt file. Mininum 100 words, recommended 1200.
-              </FormText>
-            </FormGroup>
-          </Form>
-        </p>
-      </Jumbotron>
+        {!this.state.response
+         ? <PersonalityLanding handleChange={this.handleChange} submitForm={this.submitForm}/>
+         : <PersonalityResult {...this.state.response}/>}
     </div>
     );
   }
 }
 
-/*
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Watson Personality</h1>
-          <img src={logo} className="App-logo" alt="logo" />
-        </header>
-        <p>The following is the results of a your personality test based on the supplied text.<br/>
-          The percentage indicates the percentile you exhibit for that trait. For example if<br />
-          you have a 65% in a trait, you are higher than 65% of people and lower than 35%.
-          </p>
-        <p className="App-intro">
-          {this.state.response ? personalityDisplay.DisplayBigFive(this.state.response.personality) : 'Waiting for response...'}
-          {this.state.response ? personalityDisplay.DisplayNeeds(this.state.response.needs) : ''}
-          {this.state.response ? personalityDisplay.DisplayValues(this.state.response.values) : ''}
-          {this.state.response ? personalityDisplay.DisplayConsumptionPreferences(this.state.response.consumption_preferences) : ''}
-        </p>
-      </div>
-      */
+const PersonalityLanding = props => (
+  <Jumbotron>
+    <h1 className="display-3">Watson Personality</h1>
+    <p className="lead">This page lets you upload text and have the Watson API infer personality insights from it.</p>
+    <hr className="my-2" />
+    <p>Upload a text file or paste text below.</p>
+      <Form onSubmit={props.submitForm}>
+        <FormGroup>
+          <Label for="insightText">Write or paste some text</Label>
+          <Input type="textarea" name="text" id="insightText" onChange={props.handleChange} placeholder="Mininum 100 words, recommended 1200." />
+          <Button color="primary">Submit</Button>
+        </FormGroup>
+        <FormGroup>
+          <Label for="insightUpload">Upload a file</Label>
+          <Input type="file" name="file" id="insightUpload" />
+          <FormText color="muted">
+            Must be a .txt file. Mininum 100 words, recommended 1200.
+          </FormText>
+        </FormGroup>
+      </Form>
+  </Jumbotron>
+)
+
+const PersonalityResult = (props) => (
+<div>
+  <Jumbotron>
+    <h1 className="display-3">Watson Personality</h1>
+    <p className="lead">Personality Insights</p>
+    <hr className="my-2" />
+    <p>The following is the results of a your personality test based on the supplied text.<br/>
+        The percentage indicates the percentile you exhibit for that trait. For example if<br />
+        you have a 65% in a trait, you are higher than 65% of people and lower than 35%.
+    </p>
+  </Jumbotron>
+    <div className="App-intro">
+    {personalityDisplay.DisplayBigFive(props.personality)}
+    {personalityDisplay.DisplayNeeds(props.needs)}
+    {personalityDisplay.DisplayValues(props.values)}
+    {personalityDisplay.DisplayConsumptionPreferences(props.consumption_preferences)}
+  </div>
+</div>
+)
 
 export default App;
