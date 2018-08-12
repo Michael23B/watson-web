@@ -1,14 +1,42 @@
 import React from 'react';
-import {  Progress, ListGroup, ListGroupItem, Jumbotron } from 'reactstrap';
+import {  Progress, ListGroup, ListGroupItem, UncontrolledAlert} from 'reactstrap';
 
 const divStyle = {
   boxShadow: '5px 10px',
   backgroundColor: '#e9ecef',
-  marginBottom: 25,
-  padding: 25
+  margin: 25,
+  padding: 25,
+  borderStyle: "solid",
+  borderWidth: 5,
+  textAlign: 'center'
 }
 
-const DisplayBigFive = (personality) => {
+const DisplayWarnings = (props) => {
+  let { warnings } = props;
+  return(
+    <div>
+    {
+      warnings.map(w => (
+      <UncontrolledAlert color="danger">
+        {w.message}
+      </UncontrolledAlert>
+      ))
+    }
+    </div>
+  )
+}
+
+const DisplayInputText = (props) => {
+  let { inputText } = props; //TODO: attach input text to response object
+  return(
+    <UncontrolledAlert color="dark">
+    {inputText}
+    </UncontrolledAlert>
+  )
+}
+
+const DisplayBigFive = (props) => {
+  let { personality } = props;
     return(
       <div style={divStyle}>
         <h1 className="display-4">Big 5</h1>
@@ -31,7 +59,8 @@ const DisplayBigFive = (personality) => {
     );
   }
   
-  const DisplayNeeds = (needs) => {
+  const DisplayNeeds = (props) => {
+    let { needs } = props;
     return(
       <div style={divStyle}>
         <h1>Needs</h1>
@@ -41,7 +70,8 @@ const DisplayBigFive = (personality) => {
     );
   }
   
-  const DisplayValues = (values) => {
+  const DisplayValues = (props) => {
+    let { values } = props;
     return(
       <div style={divStyle}>
         <h1>Values</h1>
@@ -51,13 +81,14 @@ const DisplayBigFive = (personality) => {
     );
   }
   
-  const DisplayConsumptionPreferences = (preferences) => {
+  const DisplayConsumptionPreferences = (props) => {
+    let { consumption_preferences } = props;
     return(
       <div style={divStyle}>
         <h1>Consumption preferences</h1>
         <p>Consumption preferences are scored 0, 50 or 100 rather than weighted as a percentile.</p>
       {
-        preferences.map(category => {
+        consumption_preferences.map(category => {
           return(
             <div>
             <h2>{category.name}</h2>
@@ -75,7 +106,7 @@ const DisplayBigFive = (personality) => {
       let percentile = Math.round(item[childName] * 100);
       return(
         <ListGroup>
-        <ListGroupItem key={item.name}>{item.name} ({percentile}%)<br/><Progress value={percentile} /></ListGroupItem>
+        <ListGroupItem style={{margin: 5}} key={item.name}>{item.name} ({percentile}%)<br/><Progress value={percentile} /></ListGroupItem>
       </ListGroup>
       )
   })
@@ -85,5 +116,6 @@ const DisplayBigFive = (personality) => {
       DisplayBigFive: DisplayBigFive,
       DisplayNeeds: DisplayNeeds,
       DisplayValues: DisplayValues,
-      DisplayConsumptionPreferences: DisplayConsumptionPreferences
+      DisplayConsumptionPreferences: DisplayConsumptionPreferences,
+      DisplayWarnings: DisplayWarnings
   }

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import logo from './img/PersonalityInsights.svg';
 import './App.css';
-import personalityDisplay from './modules/displayPersonality';
+import displayPersonality from './modules/displayPersonality';
 import { Jumbotron, Button, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
+
+const { DisplayBigFive, DisplayNeeds, DisplayValues, DisplayConsumptionPreferences, DisplayWarnings } = displayPersonality;
 
 class App extends Component {
   constructor(props) {
@@ -55,7 +56,8 @@ class App extends Component {
 const PersonalityLanding = props => (
   <Jumbotron>
     <h1 className="display-3">Watson Personality</h1>
-    <p className="lead">This page lets you upload text and have the Watson API infer personality insights from it.</p>
+    <p className="lead">This page lets you upload text and have the Watson API infer personality insights from it.
+    </p>
     <hr className="my-2" />
     <p>Upload a text file or paste text below.</p>
       <Form onSubmit={props.submitForm}>
@@ -77,20 +79,22 @@ const PersonalityLanding = props => (
 
 const PersonalityResult = (props) => (
 <div>
-  <Jumbotron>
-    <h1 className="display-3">Watson Personality</h1>
-    <p className="lead">Personality Insights</p>
+  <Jumbotron style={{textAlign: 'center'}}>
+    <h1 className="display-3">Personality Insights</h1>
+    <p className="lead">Results</p>
     <hr className="my-2" />
-    <p>The following is the results of a your personality test based on the supplied text.<br/>
+    <p>
+      The following is the results of a your personality test based on the supplied text.<br/>
         The percentage indicates the percentile you exhibit for that trait. For example if<br />
         you have a 65% in a trait, you are higher than 65% of people and lower than 35%.
     </p>
   </Jumbotron>
-    <div className="App-intro">
-    {personalityDisplay.DisplayBigFive(props.personality)}
-    {personalityDisplay.DisplayNeeds(props.needs)}
-    {personalityDisplay.DisplayValues(props.values)}
-    {personalityDisplay.DisplayConsumptionPreferences(props.consumption_preferences)}
+  <div className="App-intro">
+    <DisplayWarnings {...props}/>
+    <DisplayBigFive {...props}/>
+    <DisplayNeeds {...props}/>
+    <DisplayValues {...props}/>
+    <DisplayConsumptionPreferences {...props}/>
   </div>
 </div>
 )
