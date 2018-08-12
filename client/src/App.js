@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import logo from './PersonalityInsights.svg';
+import logo from './img/PersonalityInsights.svg';
 import './App.css';
 import personalityDisplay from './modules/displayPersonality';
+import { Jumbotron, Button, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
 
 class App extends Component {
 
@@ -29,6 +30,35 @@ class App extends Component {
 
   render() {
     return (
+      <div>
+      <Jumbotron>
+        <h1 className="display-3">Watson Personality</h1>
+        <p className="lead">This page lets you upload text and have the Watson API infer personality insights from it.</p>
+        <hr className="my-2" />
+        <p>Upload a text file or paste text here.</p>
+        <p className="lead">
+          <Form>
+            <FormGroup>
+              <Label for="insightText">Write or paste some text</Label>
+              <Input type="textarea" name="text" id="insightText" placeholder="Mininum 100 words, recommended 1200." />
+              <Button color="primary">Submit</Button>
+            </FormGroup>
+            <FormGroup>
+              <Label for="insightUpload">Upload a file</Label>
+              <Input type="file" name="file" id="insightUpload" />
+              <FormText color="muted">
+                Must be a .txt file. Mininum 100 words, recommended 1200.
+              </FormText>
+            </FormGroup>
+          </Form>
+        </p>
+      </Jumbotron>
+    </div>
+    );
+  }
+}
+
+/*
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">Watson Personality</h1>
@@ -45,8 +75,6 @@ class App extends Component {
           {this.state.response ? personalityDisplay.DisplayConsumptionPreferences(this.state.response.consumption_preferences) : ''}
         </p>
       </div>
-    );
-  }
-}
+      */
 
 export default App;
