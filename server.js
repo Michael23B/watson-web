@@ -9,45 +9,53 @@ const personalityInsights = new PersonalityInsights(pApiInfo);
 
 let personalityData = '\'Visit /api/personality\' to caluclate personality first.';
 
-async function CallWatsonPersonality(res) {
-    console.log('CallWatsonPersonality() running');
-    let profileText;
-
-    try {
-        profileText = fs.readFileSync('./data/test-profile.txt', 'utf8');
-    }
-    catch(e) { console.error(e); }
-    
+async function CallWatsonPersonality(inputText, res) {
     personalityInsights.profile(
         {
-            content: profileText,
+            content: inputText,
             content_type: 'text/plain',
             consumption_preferences: true
         },
         (err, response) => {
             if (err) {
                 console.error(err);
-                res.send(`Error occured: ${err}`)
+                res.status(400).send({error: err})
             } else {
                 personalityData = response;
-                res.send(response);
-                console.log('CallWatsonPersonality() finished')
+                personalityData.inputText = inputText;
+                res.send(personalityData);
             }
         }
     );
 }
 
+function SendTestResult(res) {
+    //For testing purposes just use this earlier result
+    let testResult = require('./data/test-personality.json')
+    let inputText;
+    try {
+        inputText = fs.readFileSync('./data/test-profile.txt', 'utf8');
+    }
+    catch(e) { console.error(e); }
+    testResult.inputText = inputText;
+    res.send(testResult);
+}
+
+app.use(express.json());
+
 app.get('/api/result', (req, res) => {
     res.send(personalityData);
 });
 
-app.get('/api/personality', async (req, res) => {
-    console.log('api/personality called');
-    //CallWatsonPersonality(res);
-    
-    //For testing purposes just use this earlier result
-    let testResult = require('./data/test-personality.json')
-    res.send(testResult);
+app.post('/api/personality', async (req, res) => {
+    let { inputText } = req.body;
+    if (!inputText || inputText.length < 100) {
+        res.send({'error': 'Input text is not long enough! Minimum 100 words.'});
+        return;
+    }
+
+    CallWatsonPersonality(inputText, res);
+    //SendTestResult(res);
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
