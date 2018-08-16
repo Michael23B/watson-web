@@ -4,7 +4,7 @@ import displayPersonality from './modules/displayPersonality';
 import { Jumbotron, Button, Form, FormGroup, FormText, Label, Input, UncontrolledAlert } from 'reactstrap';
 
 const { DisplayBigFive, DisplayNeeds, DisplayValues, DisplayConsumptionPreferences, DisplayWarnings, DisplayInputText } = displayPersonality;
-
+//Draw error in a seperate display component so they can be reset properly
 class App extends Component {
   constructor(props) {
     super(props);
@@ -55,9 +55,20 @@ class App extends Component {
   }
 
   handleChange(e) {
+    let resultText = '';
+    if (e.target.files) {
+      let fr = new FileReader();
+      fr.onload = function(e){
+        console.log(e.target.result)
+      };
+      fr.readAsText(e.target.files[0], "UTF-8");
+    }
+
+    console.log(resultText);
+
     this.setState({
       response: this.state.response,
-      formText: e.target.value,
+      formText: resultText || e.target.value,
       responseError: '',
       responsePending: ''
     });
@@ -111,7 +122,7 @@ const PersonalityLanding = props => (
         </FormGroup>
         <FormGroup>
           <Label for="insightUpload">Upload a file</Label>
-          <Input type="file" name="file" id="insightUpload" />
+          <Input onChange={props.handleChange} type="file" name="file" id="insightUpload" />
           <FormText color="muted">
             Must be a .txt file. Mininum 100 words, recommended 1200.
           </FormText>
