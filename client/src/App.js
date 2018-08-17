@@ -56,15 +56,13 @@ class App extends Component {
 
   handleChange(e) {
     let resultText = '';
+    let fr = new FileReader();
+    //If we have uploaded a file, that takes precedence.
     if (e.target.files) {
-      let fr = new FileReader();
-      fr.onload = function(e){
-        console.log(e.target.result)
-      };
-      fr.readAsText(e.target.files[0], "UTF-8");
+      fr.onload = (e) => { this.output = e.target.result; }
+      fr.output = fr.readAsText(e.target.files[0], "UTF-8");
     }
-
-    console.log(resultText);
+    resultText = fr.output;
 
     this.setState({
       response: this.state.response,
