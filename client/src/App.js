@@ -17,6 +17,7 @@ class App extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
+    this.loadText = this.loadText.bind(this);
   }
 
   async callApi(inputText) {
@@ -54,19 +55,27 @@ class App extends Component {
     });
   }
 
+  loadText(e) {
+    this.setState({
+      response: this.state.response,
+      formText: e.target.result,
+      responseError: '',
+      responsePending: ''
+    });
+  }
+
   handleChange(e) {
-    let resultText = '';
-    let fr = new FileReader();
     //If we have uploaded a file, that takes precedence.
     if (e.target.files) {
-      fr.onload = (e) => { this.output = e.target.result; }
+      let fr = new FileReader();
+      fr.onload = this.loadText;
       fr.output = fr.readAsText(e.target.files[0], "UTF-8");
+      return;
     }
-    resultText = fr.output;
 
     this.setState({
       response: this.state.response,
-      formText: resultText || e.target.value,
+      formText: e.target.value,
       responseError: '',
       responsePending: ''
     });
