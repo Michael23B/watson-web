@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import displayPersonality from './modules/displayPersonality';
-import { Jumbotron, Button, Form, FormGroup, FormText, Label, Input, UncontrolledAlert } from 'reactstrap';
+import { Jumbotron, Form, FormGroup, FormText, Label, Input, UncontrolledAlert,
+          UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+
+//TODO: change setState() calls that just change one field to be cleaner. eg newState = this.state -> newState.thingy -> setState(newState);
 
 const { DisplayBigFive, DisplayNeeds, DisplayValues, DisplayConsumptionPreferences, DisplayWarnings, DisplayInputText } = displayPersonality;
 //Draw error in a seperate display component so they can be reset properly
@@ -11,6 +14,7 @@ class App extends Component {
     this.state = {
       response: '',
       formText: '',
+      formFile: '',
       responseError: '',
       responsePending: ''
     }
@@ -42,6 +46,7 @@ class App extends Component {
       this.setState({
         response: this.state.response,
         formText: this.state.formText,
+        formFile: this.state.formFile,
         responseError: res.error,
         responsePending: ''
       });
@@ -50,6 +55,7 @@ class App extends Component {
     this.setState({
       response: res,
       formText: this.state.formText,
+      formFile: this.state.formFile,
       responseError: this.state.responseError,
       responsePending: ''
     });
@@ -58,7 +64,8 @@ class App extends Component {
   loadText(e) {
     this.setState({
       response: this.state.response,
-      formText: e.target.result,
+      formText: this.state.formText,
+      formFile: e.target.result,
       responseError: '',
       responsePending: ''
     });
@@ -76,22 +83,24 @@ class App extends Component {
     this.setState({
       response: this.state.response,
       formText: e.target.value,
+      formFile: this.state.formFile,
       responseError: '',
       responsePending: ''
     });
   }
 
-  submitForm(e) {
+  submitForm(e, type) {
     e.preventDefault();
 
     this.setState({
       response: this.state.response,
-      formText: e.target.value,
+      formText: this.state.formText,
+      formFile: this.state.formFile,
       responseError: this.state.responseError,
       responsePending: 'Response pending...'
     });
 
-    this.callApi(this.state.formText)
+    this.callApi(type === 'text' ? this.state.formText : this.state.formFile)
     .then(res => this.receiveApiResponse(res))
     .catch(console.error);
   }
@@ -100,7 +109,7 @@ class App extends Component {
     return (
       <div>
         {!this.state.response
-         ? <PersonalityLanding handleChange={this.handleChange} submitForm={this.submitForm} error={this.state.responseError} pending={this.state.responsePending}/>
+         ? <PersonalityLanding handleChange={this.handleChange} submitForm={(e, type) => {this.submitForm(e, type)}} error={this.state.responseError} pending={this.state.responsePending}/>
          : <PersonalityResult {...this.state.response}/>}
     </div>
     );
@@ -127,6 +136,7 @@ const PersonalityLanding = props => (
           <Label for="insightText">Write or paste some text</Label>
           <Input type="textarea" name="text" id="insightText" onChange={props.handleChange} placeholder="Mininum 100 words, recommended 1200." />
         </FormGroup>
+
         <FormGroup>
           <Label for="insightUpload">Upload a file</Label>
           <Input onChange={props.handleChange} type="file" name="file" id="insightUpload" />
@@ -134,7 +144,18 @@ const PersonalityLanding = props => (
             Must be a .txt file. Mininum 100 words, recommended 1200.
           </FormText>
         </FormGroup>
-        <Button color="primary">Submit</Button>
+
+        <UncontrolledDropdown>
+          <DropdownToggle caret color="primary">
+            Submit
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={e => props.submitForm(e, 'text')}>Upload text</DropdownItem>
+            <DropdownItem divider />
+            <DropdownItem onClick={e => props.submitForm(e, 'file')}>Upload file</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+
       </Form>
   </Jumbotron>
 )
